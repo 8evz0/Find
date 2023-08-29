@@ -43,16 +43,21 @@ Thirt-party plugins: ./lab12lvcN32451 [SHORT OPTION] [ARG] [LONG OPTION] [ARG2] 
 
 Examples of using with screenshots:
 1. Build programm
+   
    ![изображение](https://github.com/8evz0/FSP1/assets/65715287/1d0eae84-2086-42d9-a31d-ff7128482417)
+   
 3. Find all files that contain string (-s)
    Command: sudo ./lab12lvcN32451 /home "hi" -s
+   
    ![изображение](https://github.com/8evz0/FSP1/assets/65715287/53605463-ce30-44ad-96dc-525077840ed6)
 
-5. Find all files that contain an array of Latinic characters in hexadecimal representation
+4. Find all files that contain an array of Latinic characters in hexadecimal representation
    Command: sudo ./lab12lvcN32451 /home "hi" -S
-6. Using plugins
+
+5. Using plugins
    Command: sudo ./lab12lvcN32451 --dl-syms "a" / (to find dl by symbols)
    Command: <pre>sudo ./lab12lvcN32451 --double-bin 3.14 / (to find double)
+   
    ![изображение](https://github.com/8evz0/FSP1/assets/65715287/c3021fd5-c3f5-4d9a-9c6d-67833010c3f9)
 
    
