@@ -63,77 +63,77 @@ Examples of using with screenshots:
    
 P.S. To create plug-ins for the program you need to use the following API:
 
-#ifndef _PLUGIN_API_H
-#define _PLUGIN_API_H
-
-#include <getopt.h>
-
-#define PLUGIN_API_VERSION 1
-
-/*
-    Structure describing the option supported by the plugin.
-*/
-struct plugin_option {
-    /* Option in the format supported by getopt_long (man 3 getopt_long). */
-    struct option opt;
-    /* Description of the option that the plugin provides. */
-    const char *opt_descr;
-};
-
-/*
-    A structure containing information about the plugin.
-*/
-struct plugin_info {
-    /* Plugin purpose */
-    const char *plugin_purpose;
-    /* Author of the plugin, for example "Ivanov Ivan Ivanovich, N32xx" */
-    const char *plugin_author;
-    /* Length of the list of options */
-    size_t sup_opts_len;
-    /* List of options supported by the plugin */
-    struct plugin_option *sup_opts;
-};
-
-
-int plugin_get_info(struct plugin_info* ppi);
-/*
-    plugin_get_info()
-    A function to get information about a plugin.
-    Arguments:
-        ppi is the address of the structure that the plugin fills with information.
-    Return value:
-          0 - in case of success,
-        < 0 - in case of failure (in this case you cannot continue working with this plugin).
-*/
-
-
-
-int plugin_process_file(const char *fname,
-        struct option in_opts[],
-        size_t in_opts_len);
-/*
-    plugin_process_file()
-    A function to find out if a file meets the given criteria.
-    Arguments:
-        fname - path to the file (full or relative), which is checked for
-            correspondence to the criteria specified with the help of in_opts array.
-        in_opts - list of options (search criteria) that are passed to the plugin.
-            struct option {
-               const char *name;
-               int has_arg;
-               int *flag;
-               int val;
-            };
-            The name field is used to pass the name of the option, the flag field is used to pass the value of the option (as a string).
-            option value (as a string). If the option has an argument, the field has_arg
-            field is set to a non-zero value. The val field is not used.
-        in_opts_len - the length of the options list.        
-    Return value:
-          0 - the file meets the given criteria,
-        > 0 - the file does NOT meet the specified criteria,
-        < 0 - an error occurred in the process
-    If an error occurred, the errno variable should be set to the appropriate value. 
-    to the appropriate value.
-*/
-        
-#endif
+	#ifndef _PLUGIN_API_H
+	#define _PLUGIN_API_H
+	
+	#include <getopt.h>
+	
+	#define PLUGIN_API_VERSION 1
+	
+	/*
+	    Structure describing the option supported by the plugin.
+	*/
+	struct plugin_option {
+	    /* Option in the format supported by getopt_long (man 3 getopt_long). */
+	    struct option opt;
+	    /* Description of the option that the plugin provides. */
+	    const char *opt_descr;
+	};
+	
+	/*
+	    A structure containing information about the plugin.
+	*/
+	struct plugin_info {
+	    /* Plugin purpose */
+	    const char *plugin_purpose;
+	    /* Author of the plugin, for example "Ivanov Ivan Ivanovich, N32xx" */
+	    const char *plugin_author;
+	    /* Length of the list of options */
+	    size_t sup_opts_len;
+	    /* List of options supported by the plugin */
+	    struct plugin_option *sup_opts;
+	};
+	
+	
+	int plugin_get_info(struct plugin_info* ppi);
+	/*
+	    plugin_get_info()
+	    A function to get information about a plugin.
+	    Arguments:
+	        ppi is the address of the structure that the plugin fills with information.
+	    Return value:
+	          0 - in case of success,
+	        < 0 - in case of failure (in this case you cannot continue working with this plugin).
+	*/
+	
+	
+	
+	int plugin_process_file(const char *fname,
+	        struct option in_opts[],
+	        size_t in_opts_len);
+	/*
+	    plugin_process_file()
+	    A function to find out if a file meets the given criteria.
+	    Arguments:
+	        fname - path to the file (full or relative), which is checked for
+	            correspondence to the criteria specified with the help of in_opts array.
+	        in_opts - list of options (search criteria) that are passed to the plugin.
+	            struct option {
+	               const char *name;
+	               int has_arg;
+	               int *flag;
+	               int val;
+	            };
+	            The name field is used to pass the name of the option, the flag field is used to pass the value of the option (as a string).
+	            option value (as a string). If the option has an argument, the field has_arg
+	            field is set to a non-zero value. The val field is not used.
+	        in_opts_len - the length of the options list.        
+	    Return value:
+	          0 - the file meets the given criteria,
+	        > 0 - the file does NOT meet the specified criteria,
+	        < 0 - an error occurred in the process
+	    If an error occurred, the errno variable should be set to the appropriate value. 
+	    to the appropriate value.
+	*/
+	        
+	#endif
