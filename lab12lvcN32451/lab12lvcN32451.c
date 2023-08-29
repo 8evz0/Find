@@ -67,15 +67,15 @@ typedef int (*pgi_func_t)(struct plugin_info*); // plugin_get_info;
 
 struct longopt 
 {
-    struct option *all_opt ; // Массив для всех длинных опций
-    size_t all_opt_len ; // Количество всех опций
-    struct option *opts_to_pass ; // Массив опций для паса в плагин
-    size_t optToPass ; // Количество опций в пасе
+    struct option *all_opt ; 
+    size_t all_opt_len ; 
+    struct option *opts_to_pass ; 
+    size_t optToPass ; 
     ppf_func_t func; // plugin_process_file
     pgi_func_t info; // plugin_get_info;
 };
 
-// Функция для подсчета всех библиотек в директории
+
 int CountSO (const char* dirname, int* len) {
     DIR* dir = opendir(dirname);
     if (dir == NULL) {
@@ -88,7 +88,7 @@ int CountSO (const char* dirname, int* len) {
     struct dirent* entity;
     entity = readdir(dir);
     *len = 0;
-    // Пока не закончатся файлы в директории проверка на то, являются ли они файлами с форматом .so
+
     while (entity != NULL) {
         int flen = strlen(entity->d_name);
         if ((entity->d_type == DT_REG) && (entity->d_name[flen-1] == 'o') && (entity->d_name[flen-2] == 's') && (entity->d_name[flen-3] == '.')) {
@@ -100,7 +100,7 @@ int CountSO (const char* dirname, int* len) {
     return 0;
 }
 
-// Попытка открытия найденных библиотек
+
 int TryToOpen (const char* dirname, void* dl[], int len) {
     DIR* dir = opendir(dirname);
     if (dir == NULL) {
@@ -113,7 +113,7 @@ int TryToOpen (const char* dirname, void* dl[], int len) {
     struct dirent* entity;
     entity = readdir(dir);
     int index = 0;
-    // Пока есть файлы в директории и индекс меньше количества найденных библиотек -> попытка открытия этих библиотек, как только все найденные библиотеки пройду попытку открытия -> выход из функции для дальнейшей проверки на то, являются ли они подходящими плагинами
+
     while (entity != NULL && index < len) {
         int flen = strlen(entity->d_name);
         if ((entity->d_type == DT_REG) && (flen > 3) && (entity->d_name[flen-1] == 'o') && (entity->d_name[flen-2] == 's') && (entity->d_name[flen-3] == '.')) {
@@ -138,7 +138,7 @@ int TryToOpen (const char* dirname, void* dl[], int len) {
     return 0;
 }
   
-// Рекурсивный поиск 
+
 int Search(const char* dirname, int tlen, struct longopt sup_all[], int is_or, int is_not) {
      FTS* ftsp;
     FTSENT* p;
@@ -153,11 +153,11 @@ int Search(const char* dirname, int tlen, struct longopt sup_all[], int is_or, i
 
     while ((p = fts_read(ftsp)) != NULL) {
         if (p->fts_info == FTS_D) {
-            continue; // skip directories
+            continue; 
         }
 
         if (strcmp(p->fts_name, ".") == 0 || strcmp(p->fts_name, "..") == 0 || strcmp(p->fts_name, "~") == 0) {
-            continue; // skip current and parent directory entries
+            continue; 
         }
 
         char* file_path = p->fts_accpath;
@@ -167,9 +167,9 @@ int Search(const char* dirname, int tlen, struct longopt sup_all[], int is_or, i
                 fprintf(stderr, "ERROR: Failed to access file %s: %s\n", file_path, strerror(errno));
                 continue;
             }
-            // handle regular files
-            int ret_true = 0; // if plugin returns true, increment ret_true
-            int plugins_call = 0; // count the number of plugins called
+
+            int ret_true = 0; 
+            int plugins_call = 0; 
 
             for (int i = 0; i < tlen; i++) {
                 if (sup_all[i].optToPass > 0) {
@@ -214,22 +214,16 @@ int Search(const char* dirname, int tlen, struct longopt sup_all[], int is_or, i
 
 int check_file_access(const char* filename, int mode) {
     if (access(filename, mode) == 0) {
-        // file access is valid
         return 0;
     }
     else {
-        // file access is invalid, check errno for details
         perror("\033[34mERROR:\033[0m checking file access");
         return -1;
     }
 }
 
-// Программа работает с любыми планинами у которых опции идут в последовательноси [OPTION] [ARG] [DIR] , аргументов командной строки может быть больше чем 4
 int With_Third_Party_Plugins(int argc__, char* argv__[])
 {
-  //int optToPass = 0; // Кол-во опций передаваемых в плагин
-  //struct option *opts_to_pass = NULL; // сами передаваемые опции
-  //struct option *longopts = NULL; // все опции считанные с терминала
   if(argc__==2)
   {
     if((!strcmp(argv__[1],"-h")||!strcmp(argv__[1],"--help")||!strcmp(argv__[1],"-v")||!strcmp(argv__[1],"--version")))
@@ -250,7 +244,6 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
     opterr = 0;
     
     int  is_o = 0, is_n = 0  ,is_P = 0 ;
-    // short_option A is_a = 1 (if is_o == 0 and is_n == 0)
 
     int len = 0;
 
@@ -321,7 +314,6 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
 
     for (int i = 0; i < len; i++){
 
-        // Check for plugin_get_info()
         sup_all[i].info = dlsym(dl[i], "plugin_get_info");
         if(!sup_all[i].info){
             fprintf(stderr, "\033[31mERROR:\033[0m dlsym() failed: %s\n", dlerror());
@@ -338,15 +330,11 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
         }
          
 
-        // Get pointer to plugin_process_file()
-
         sup_all[i].func = dlsym(dl[i], "plugin_process_file");
         if(!sup_all[i].func) {
             fprintf(stderr, "\033[31mERROR:\033[0m no plugin_process_file() function found\n");
             goto END;
         }
-
-        // Prepare array of options for getopt_long
 
         sup_all[i].all_opt_len = pi.sup_opts_len;
         sup_all[i].all_opt = calloc(pi.sup_opts_len + 1, sizeof(struct option));
@@ -356,14 +344,9 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
             goto END;
         }
 
-        // copy option information
-
         for (size_t j = 0; j < pi.sup_opts_len; j++) {
             memcpy(&sup_all[i].all_opt[j], &pi.sup_opts[j].opt, sizeof(struct option));
         }
-
-        // Prepare array of actually used options that will be passed to 
-        // plugin_process_file() (Maximum pi.sup_opts_len options)
 
         sup_all[i].optToPass = 0;
         sup_all[i].opts_to_pass = calloc(pi.sup_opts_len, sizeof(struct option));
@@ -372,9 +355,7 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
             goto END;
         }
     }
-
-
-    // Now process options for the lib
+	
     for (int i = 0; i < len; i++) {
         optind = 1;   
         memcpy(new_argv, argv__, argc__ * sizeof(char*));
@@ -385,20 +366,16 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
             if (ret == -1) break;
             if(ret != 0) continue;
          
-            // Check how many options we got up to this moment
+
             if ((size_t) sup_all[i].optToPass == sup_all[i].all_opt_len){
                 fprintf(stderr, "\033[31mERROR:\033[0m too many options!\n");
                 goto END;
             }
 
-            // Add this option to array of options actually passed to plugin_process_file()
             memcpy(sup_all[i].opts_to_pass + sup_all[i].optToPass, sup_all[i].all_opt + opt_ind, sizeof(struct option));
          
 
-            // Argument (if any) is passed in flag
             if ((sup_all[i].all_opt + opt_ind)->has_arg) {
-                // Mind this!
-                // flag is of type int*, but we are passing char* here (it's ok to do so). 
                 (sup_all[i].opts_to_pass + sup_all[i].optToPass)->flag = (int*)strdup(optarg);
             }
 
@@ -418,7 +395,7 @@ int With_Third_Party_Plugins(int argc__, char* argv__[])
         fprintf(stdout, "\033[33mDEBUG:\033[0mOptions passed! \n");
     }
 
-    // Call fun recursive search and plugin_process_file()
+
     errno = 0;
     f_name = strdup(argv__[argc__-1]);
     int ret_main = Search(f_name, len, sup_all, is_o, is_n);  
@@ -465,11 +442,9 @@ int main(int argc, char* argv[])
 {	
         plugin_opt_trigger=lib_find(plugin_info_trigger);
         #if LAB1DEBUG==2
-        fprintf(stdout,"plugin_opt_trigger=%d\n",plugin_opt_trigger); // количество найденных плагинов
+        fprintf(stdout,"plugin_opt_trigger=%d\n",plugin_opt_trigger); 
         #endif
-        
-        // Если плагины не были найдены в каталоге с исп файлом, то проверяется была ли введена опция -Р
-        // Если она не была введена, то скорее всего пользователь не работает с плагинами, переход к огбработке аршументо при стандартном использовании программы (для поиска файлов по содержимому)
+    
         if(plugin_opt_trigger==0)
         {
           if(argv[1])
@@ -489,23 +464,16 @@ int main(int argc, char* argv[])
 	    #endif
 	    exit(EXIT_FAILURE);              
           }
-          //fprintf(stdout,"Program didnt find plugins in current directory. Try use option -P [dir] for connect plugin(s) to the program or try [-h]/[--help] for help.\n");
+          
         }
-        // Если количество найденных плагинов > 0 
-        // Если использованы опции не предусмотренные программой или эти опции применяются при работе с плагин(-ом/-ами), то переход в ф-ю по работе с внешими плагинами
-        // где производится проверка опций на предмет поддержки со стороны плагина ( если опций не существуют или они не поддерживаются, то завершение работы, иначе работа переходит в плагин )
         else if(plugin_opt_trigger>0)
         {
-          //fprintf(stdout,"Program found plugins in current directory. Try use option -P [dir] for connect plugin(s) to the program or try [-h]/[--help] for help how work with founded options.\n");
           if(argv[1])
           {
             str4=argv[1];
-            // Если первый аргумент после имени программы является одной из опцией или начинается как путь
-            // то это подразумевает стандартное использование программы
-            // иначе имеет смысл быть, что пользователь хочет работать с найденными плагинами
             if((str4[0]=='/'||(str4[0]=='.'&&str4[1]=='/'))||(!strcmp(argv[1],"-h")||!strcmp(argv[1],"--help")||!strcmp(argv[1],"-v")||!strcmp(argv[1],"--version")))
 	    {
-                // Если второй аргуемент после имени программы начинается как путь, это означает что пользователь работает с встроенными опциями программы, а не с внешними плагинами
+                
 	    }
             else
             {
@@ -523,8 +491,6 @@ int main(int argc, char* argv[])
 	}
 	fprintf(stdout,"flag at start=%d\n",flag);
 	#endif
-
-	// Если кроме программы больше нет аргументов
 	if(argc==1)
 	{
 		log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");
@@ -536,7 +502,7 @@ int main(int argc, char* argv[])
 		
 		exit(EXIT_FAILURE);
 	}
-	// Если есть один аргумент проверка на то, является ли он опцией
+
 	else if(argc==2)
 	{
 		if((!strcmp(argv[1],"-h")||!strcmp(argv[1],"--help")||!strcmp(argv[1],"-v")||!strcmp(argv[1],"--version")))
@@ -556,14 +522,11 @@ int main(int argc, char* argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
-	else if (argc==4) // LAB12 (argc==6)
+	else if (argc==4)
 	{
 		str=argv[1];
 		str2=argv[2];
-		//str3=argv[5]; LAB12 
-		
-		// если количество аргументов корректно, но использовалась опция как один из них
-		// Если первый из двух аргументов опция 
+
 		if((!strcmp(argv[1],"-h")||!strcmp(argv[1],"--help")||!strcmp(argv[1],"-v")||!strcmp(argv[1],"--version")))
 		{
 			log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");
@@ -573,7 +536,6 @@ int main(int argc, char* argv[])
 			#endif
 			exit(EXIT_FAILURE);
 		}
-		// Если второй из двух аргументов опция
 		else if((!strcmp(argv[2],"-h")||!strcmp(argv[2],"--help")||!strcmp(argv[2],"-v")||!strcmp(argv[2],"--version")))
 		{
 			log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");
@@ -583,7 +545,6 @@ int main(int argc, char* argv[])
 			#endif
 			exit(EXIT_FAILURE);
 		}
-		// Если первый аргумент начинается с / или с ./ проверяем второй 
 		else if((str[0]=='.'&&str[1]=='/')||str[0]=='/')
 		{
 			if((str2[0]=='.'&&str2[1]=='/')||str2[0]=='/') 
@@ -595,7 +556,6 @@ int main(int argc, char* argv[])
 				#endif
 				exit(EXIT_FAILURE);
 			}
-			// Если третий аргумент опция, то проверяем 4, равен ли он опции и стоил ли за этой опцией аргумент(путь до библиотеки)
 			else if(!strcmp(argv[3],"--string-in-hex")||!strcmp(argv[3],"-S")||!strcmp(argv[3],"--string")||!strcmp(argv[3],"-s"))
 			{
 				#if LAB1DEBUG==1
@@ -626,7 +586,6 @@ int main(int argc, char* argv[])
 			exit(EXIT_FAILURE);
 		}
 	}	
-	// если аргументов больше либо равно 4
 	else
 	{
 		log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");
@@ -661,7 +620,6 @@ int main(int argc, char* argv[])
 				{
 					fprintf(stdout,"\nlab12lvcN32451: ./lab12lvcN32451 [OPTION]\n\t\t./lab11lvcN32451 directory target [FIND_MOD]\t\t\n\n\tDisplay information about builtin commands.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n\tOptions:\n\t  -h [--help]\tprogram help output\n\t  -v [--version]\tprogram version output\n\t  -S [--string-in-hex]\tfind all files that contain an array of Latinic characters in hexadecimal representation \n\t  -s [--string]\t\tfind all files that contain string \n\t\n\n\tArguments:\n\t  directory\tThe path from which the search begins\n\t  target\tIf it is a word, then it is enclosed in single quotes, otherwise in double quotes.\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given.\n\nThirt-party plugins: ./lab12lvcN32451 [SHORT OPTION] [ARG] [LONG OPTION] [ARG2] [PATH]\n\n\tOptions:\n\t  -P\tPath to dir with plugins (default cwd)\n\t  -A\tCombining plug-in options using the "AND" operation (effective by default).\n\t  -O\tCombining plugin options using OR operation. \n\t  -N\t\tInverting the search condition (after combining the options of theplug-ins with -A or -O).\n\t \n\n\tArguments:\n\t  ARG\tThe path with plugins (if use -P)\n\t  ARG2\tOption argument (if required).\n\t  PATH\tStart dir to search (if required).\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given. Display information about builtin commands when plugin(s) was founded.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n");
 					
-					//  auto search plugins in cwd
 					plugin_info_trigger=1;
 					/*
 					loadingBar();
