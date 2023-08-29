@@ -659,7 +659,7 @@ int main(int argc, char* argv[])
 				};
 				case 'h': 
 				{
-					fprintf(stdout,"\nlab12lvcN32451: ./lab12lvcN32451 [OPTION]\n\t\t./lab11lvcN32451 directory target [FIND_MOD]\t\t\n\n\tDisplay information about builtin commands.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n\tOptions:\n\t  -h [--help]\tprogram help output\n\t  -v [--version]\tprogram version output\n\t  -S [--string-in-hex]\tfind all files that contain an array of Latinic characters in hexadecimal representation \n\t  -s [--string]\t\tfind all files that contain string \n\t\n\n\tArguments:\n\t  directory\tThe path from which the search begins\n\t  target\tIf it is a word, then it is enclosed in single quotes, otherwise in double quotes.\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given.\n\nThirt-party plugins: ./lab12lvcN32451 [SHORT OPTION] [ARG] [LONG OPTION] [ARG2] [PATH]\n\n\tOptions:\n\t  -P\tPath to dir with plugins (default cwd)\n\t  -A\tprogram version output\n\t  -O\tfind all files that contain an array of Latinic characters in hexadecimal representation \n\t  -N\t\tfind all files that contain string\n\t \n\n\tArguments:\n\t  ARG\tThe path with plugins (if use -P)\n\t  ARG2\tOption argument (if required).\n\t  PATH\tStart dir to search (if required).\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given.Display information about builtin commands when plugin(s) was founded.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n");
+					fprintf(stdout,"\nlab12lvcN32451: ./lab12lvcN32451 [OPTION]\n\t\t./lab11lvcN32451 directory target [FIND_MOD]\t\t\n\n\tDisplay information about builtin commands.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n\tOptions:\n\t  -h [--help]\tprogram help output\n\t  -v [--version]\tprogram version output\n\t  -S [--string-in-hex]\tfind all files that contain an array of Latinic characters in hexadecimal representation \n\t  -s [--string]\t\tfind all files that contain string \n\t\n\n\tArguments:\n\t  directory\tThe path from which the search begins\n\t  target\tIf it is a word, then it is enclosed in single quotes, otherwise in double quotes.\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given.\n\nThirt-party plugins: ./lab12lvcN32451 [SHORT OPTION] [ARG] [LONG OPTION] [ARG2] [PATH]\n\n\tOptions:\n\t  -P\tPath to dir with plugins (default cwd)\n\t  -A\tCombining plug-in options using the "AND" operation (effective by default).\n\t  -O\tCombining plugin options using OR operation. \n\t  -N\t\tInverting the search condition (after combining the options of theplug-ins with -A or -O).\n\t \n\n\tArguments:\n\t  ARG\tThe path with plugins (if use -P)\n\t  ARG2\tOption argument (if required).\n\t  PATH\tStart dir to search (if required).\n\n\tExit Status:\n\t  Returns the full path to the file where the target was found. If files were encountered that cannot be opened (due to lack of privileges), then the full path to the file that could not be opened is given. Display information about builtin commands when plugin(s) was founded.\n\n\tThe order of building commands is strictly linear. Follow the instructions.\n\n");
 					
 					//  auto search plugins in cwd
 					plugin_info_trigger=1;
@@ -676,7 +676,6 @@ int main(int argc, char* argv[])
 				case 'S': 
 			
 				{
-					// Удаление из таргета ' ' , '\n' , '\t'
 					int len=strlen(target);
 					int g,j;
 					for(g=0;g<len;g++)
@@ -691,18 +690,12 @@ int main(int argc, char* argv[])
 							g--;
 						}
 					}
-					/*
-					fprintf(stdout,"\033[33mTURN ON CYRILLIC_MODULE\n");
-					loadingBar();
-					fprintf(stdout,"\033[33mDONE!\033[0m\n");
-					*/
 					for_switch=1;
 					ftw_find(path,target,for_switch);
 					break;
 				};
 				case 's': 
 				{
-					// Удаление из таргета ' ' , '\n' , '\t'
 					int len=strlen(target);
 					int g,j;
 					for(g=0;g<len;g++)
@@ -725,145 +718,10 @@ int main(int argc, char* argv[])
 			};
 		};
 	}
-	//free(str);
 	str=NULL;
-	//free(target);
 	target=NULL;
         return 0;
         END:
 	  return 0;
 }
 
-
-
-/*
-// IF На вход была подана опция -Р. Это означает, что пользователь желает работать с внешними плагинами => нужно перебрать все последующие аргументы пока не появится аргумент начинающийся с "-"(подразумевает использование опций -A -O -N) или "--" (вроде в вариантах нет плагинов без опций) поэтому плагины без опций рассматриваться не будут
-  // Все потому что логика работы программы выстраивается следующими способами
-  //  1. Если плагин(плагины) были найдены в каталоге с исп файлом, то ./lab12lvcN32451 [option (-A/-O/-N)] [plugin option] [ARG (если он предусматривается плагином)] [DIR]
-  //  2. Если путь до плагина(плагинов) был введен пользователем, то ./lab12lvcN32451 -P [dir] ... [dirN] [option (-A/-O/-N)] [plugin option] [ARG (если он предусматривается плагином)] [DIR]
-
-  // Перебор путей на предмет наличия и соответствия плагинов если хотя бы один из них не подходит , то программа завершает работу указывая на неверный путь или не соответсвие плагина критериям
-  // Так же идет проверка то является ли аргумент путем, т.е. начинается ли он с ./ или / если нет, то программа указывает на ошибку
-  
-
-  // Если передано 2 аргумента , то ошибка
-  if(argc__<3)
-  {
-    log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");		
-    exit(EXIT_FAILURE);
-  }
- 
-139 строка
-
- // Если передано три аргумента (если плагин имеет опцию не треб. аргумента)
-  // ./lab12lvcN32451 [plugin option] [DIR] 
-  else if(argc__==3)
-  {
-    str_p=argv__[1];
-    if(str_p[0]=='-'&&str_p[1]=='-')
-    {
-        char *str_p_=argv__[2];
-        if((str_p_[0]=='.'&&str_p_[1]=='/')||str_p_[0]=='/'||(str_p_[0]=='~'&&str_p_[1]=='/'))
-        {
-              #if LAB1DEBUG==2
-              fprintf(stdout,"Right using programm with plugin type ./lab12lvcN32451 [plugin option] [DIR]\n");
-              #endif
-              goto PASS_TO_PLUGIN;
-        }
-        else
-        {
-          log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");		
-          exit(EXIT_FAILURE);
-        }
-    }
-    else
-    {
-      log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");		
-      exit(EXIT_FAILURE);
-    }
-  }
-  // Если аргументов ровно четыре ), т.е. используется только один плагин опция которого требует аргумент
-  // ./lab12lvcN32451 [plugin option] [ARG] [DIR]
-  else if(argc__==4)
-  {
-    str_p=argv__[1];
-    char *str_p_=argv__[argc__-1];
-    if((str_p[0]=='-'&&str_p[1]=='-')&&((str_p_[0]=='.'&&str_p_[1]=='/')||str_p_[0]=='/'||(str_p_[0]=='~'&&str_p_[1]=='/')))
-    {
-      #if LAB1DEBUG==2
-      fprintf(stdout,"Right using programm with plugin type ./lab12lvcN32451 [plugin option] [ARG] [DIR]\n");
-      #endif
-      goto PASS_TO_PLUGIN;
-    }
-    else
-    {
-      log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");		
-      exit(EXIT_FAILURE);
-    }
-  }
-  // Если передано более 5 аргументов 
-  // ./lab12lvcN32451 -P [dir] ... [dirN] [option (-A/-O/-N)] [plugin option] [ARG (если он предусматривается плагином)] ...[plugin option N] [ARG N (если он предусматривается плагином)]  [DIR]
-  else if(argc__>5)
-  {
-    // если первый после имени программы аргумент -P , то проверяются пути на правильность написания + наличие плагина по указанному месту
-    if(!strcmp(argv__[1],"-P"))
-    {
-      #if LAB1DEBUG==2
-      fprintf(stdout,"arguments start from -P\n");
-      #endif
-      int i=1;
-      // перебор всех аргументов стоящих за опцией -Р , перебор до того момента, пока не след опция
-      while (i!=argc__)
-      {
-        str_p=argv__[i];
-        // если найдена опция, то обработка опций и следующих за ним или ними аргументов и в самом конце каталог где будет поиск
-        if((str_p[0]=='-'&&str_p[1]=='-')||!strcmp(str_p,"-"))
-        {
-          #if LAB1DEBUG==2
-          fprintf(stdout,"Find option after path\n");   
-          #endif
-          break;
-        }
-        else
-        {          
-          // если встречен путь, то проверка если по этому адресу плагин и проверка этого плагина на соот тебованием
-          if((str_p[0]=='~'&&str_p[1]=='/')||(str_p[0]=='.'&&str_p[1]=='/')||str_p[0]=='/')
-          {
-
-              path_to_plugin=argv__[i];
-              if(Check_Plugin(path_to_plugin)==0)
-              {
-                count_of_found_plugins++;
-                #if LAB1DEBUG==2
-                fprintf(stdout,"Correct path\n");
-                fprintf(stdout,"count_of_found_plugins=%d\n",count_of_found_plugins);
-                #endif
-              }
-              else
-              {
-                fprintf(stdout,"Uncorrect path: %s\n",argv__[i]);
-                log_info("Incorrect use of the program. Try [-h] or [--help] for help\n");
-                exit(EXIT_FAILURE); 
-              }
-          }
-        }
-        i++;
-      }
-      #if LAB1DEBUG==2
-      fprintf(stdout,"on exit from while i=%d\n",i);
-      #endif
-      goto PASS_TO_PLUGIN;
-    }
-    // Если первый аргумент не -Р то также перебор всех аргументов, проверка плагинов и тп.
-    else
-    {
-      // сюда добавить если первый аргумент не опция то неверно
-      #if LAB1DEBUG==2
-      fprintf(stdout,"arguments start no from -P\n");
-      #endif
-      goto PASS_TO_PLUGIN;
-    }
-    
-    
-  }
-*/
