@@ -7,6 +7,7 @@ If you have any questions, comments or suggestions - write, it's important!
 
 lab12lvcN32451: ./lab12lvcN32451 [OPTION]
 		./lab11lvcN32451 directory target [FIND_MOD]		
+  
 
 	Display information about builtin commands.
 
