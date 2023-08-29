@@ -1,0 +1,46 @@
+
+LAB 1.1
+#####################################################################################
+
+
+OPTION -S
+
+==239695== 
+==239695== HEAP SUMMARY:
+==239695==     in use at exit: 0 bytes in 0 blocks
+==239695==   total heap usage: 1,066 allocs, 1,066 frees, 2,762,140 bytes allocated
+==239695== 
+==239695== All heap blocks were freed -- no leaks are possible
+==239695== 
+==239695== For lists of detected and suppressed errors, rerun with: -s
+==239695== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+OPTION -s
+
+==239837== 
+==239837== HEAP SUMMARY:
+==239837==     in use at exit: 0 bytes in 0 blocks
+==239837==   total heap usage: 976 allocs, 976 frees, 2,761,831 bytes allocated
+==239837== 
+==239837== All heap blocks were freed -- no leaks are possible
+==239837== 
+==239837== Use --track-origins=yes to see where uninitialised values come from
+==239837== For lists of detected and suppressed errors, rerun with: -s
+==239837== ERROR SUMMARY: 14 errors from 2 contexts (suppressed: 0 from 0)
+
+
+
+
+LAB 1.2
+#####################################################################################
+
+==31418== 
+==31418== HEAP SUMMARY:
+==31418==     in use at exit: 0 bytes in 0 blocks
+==31418==   total heap usage: 123 allocs, 123 frees, 127,844 bytes allocated
+==31418== 
+==31418== All heap blocks were freed -- no leaks are possible
+==31418== 
+==31418== For lists of detected and suppressed errors, rerun with: -s
+==31418== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
