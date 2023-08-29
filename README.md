@@ -5,8 +5,9 @@ The program searches for files starting from the specified directory. It is poss
 
 If you have any questions, comments or suggestions - write, it's important!
 
-lab12lvcN32451: ./lab12lvcN32451 [OPTION]
-		./lab11lvcN32451 directory target [FIND_MOD]		
+lab12lvcN32451: 
+	1. ./lab12lvcN32451 [OPTION]
+	2. ./lab11lvcN32451 directory target [FIND_MOD]
   
 
 	Display information about builtin commands.
